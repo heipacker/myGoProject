@@ -49,12 +49,13 @@ func main() {
 	testBreakContinue()
 	testArgument("1", 1, 12, 2, 3, 4)
 	testGo()
-	testSelect()
 	testPath()
-	testGetwd()
-	testJson()
 	testLog()
+	testJson()
+	testGetwd()
 	dbQuery()
+	testHttp()
+	testSelect()
 }
 
 func testSelect() {
@@ -77,23 +78,26 @@ func testSelect() {
 		}
 	}()
 
-	for i := 0; i < 5; i++ {
-		select {
-		// 随机选择可用用 channel,发送数据。
-		case a <- i:
-		case b <- i:
+	go func(a chan int, b chan int) {
+		for i := 0; i < 5; i++ {
+			select {
+			// 随机选择可用用 channel,发送数据。
+			case a <- i:
+			case b <- i:
+			}
 		}
-	}
-	close(a)
-	select {} // 没有可用用 channel,阻塞 main goroutine。
+		close(a)
+		close(b)
+	}(a, b)
+	// select {} // 没有可用用 channel,阻塞 main goroutine。
 }
 
 func arrayTest() {
 	a, j := [4]int{1, 2, 3, 4}, 2
 	for i := 0; i < len(a); i++ {
-		log.Info(a[i])
+		fmt.Println(a[i])
 	}
-	log.Info(j)
+	fmt.Println(j)
 }
 
 func testPath() {

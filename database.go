@@ -1,17 +1,14 @@
 package main
 
 import (
-	"bytes"
 	"database/sql"
-	"encoding/json"
 	"flag"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
 
 	"github.com/Unknwon/goconfig"
 	_ "github.com/go-sql-driver/mysql"
+)
+import (
+	log "github.com/cihub/seelog"
 )
 
 var cfg *goconfig.ConfigFile = nil
@@ -19,49 +16,20 @@ var err error = nil
 var db *sql.DB = nil
 
 func dbQuery() {
-	log.Println("application start.")
+	log.Info("application start.")
 	applicationInit()
 
 	db = openDb()
 	insert(db)
 	query(db)
-	// httpTest()
 	applicationDestory()
-	log.Println("application end.")
-}
-
-type Email struct {
-	Title   string
-	Content string
-	Names   string
-}
-
-func httpTest() {
-	var alertEmail = Email{
-		Title:   "test",
-		Content: "test",
-		Names:   "pan.fu",
-	}
-	str, _ := json.Marshal(alertEmail)
-	log.Println(str)
-	body := bytes.NewBuffer([]byte(`"title":"test","content":"test","names":"pan.fu"`))
-
-	response, err := http.Post("http://l-schedule1.qss.dev.cn0.qunar.com:8080/alarm/sendAll", "application/x-www-form-urlencoded", body)
-	if err != nil {
-		log.Fatalln("post error, please check.%s", err)
-	}
-	defer response.Body.Close()
-	ret, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal("get ret error, %s", err)
-	}
-	fmt.Println(string(ret))
+	log.Info("application end.")
 }
 
 func query(ldb *sql.DB) {
 	rows, err := ldb.Query("select id, username from user where id = ?", 1)
 	if err != nil {
-		log.Println(err)
+		log.Criticalf("query error")
 	}
 
 	defer rows.Close()
@@ -70,14 +38,14 @@ func query(ldb *sql.DB) {
 	for rows.Next() {
 		err := rows.Scan(&id, &name)
 		if err != nil {
-			log.Fatal(err)
+			log.Criticalf("scan error")
 		}
-		log.Println(id, name)
+		log.Info(id, name)
 	}
 
 	err = rows.Err()
 	if err != nil {
-		log.Fatal(err)
+		log.Criticalf("err")
 	}
 }
 
@@ -86,7 +54,7 @@ func insert(ldb *sql.DB) int {
 	defer stmt.Close()
 
 	if err != nil {
-		log.Println(err)
+		log.Criticalf("prepare err")
 		return 0
 	}
 	stmt.Exec("guotie1", "guotie")
@@ -97,34 +65,34 @@ func insert(ldb *sql.DB) int {
 func openDb() *sql.DB {
 	host, _ := cfg.GetValue(goconfig.DEFAULT_SECTION, "host")
 	if host == "" {
-		log.Fatalln("host is empty, please check")
+		log.Criticalf("host is empty, please check")
 	}
 	user, _ := cfg.GetValue(goconfig.DEFAULT_SECTION, "user")
 	if user == "" {
-		log.Fatalln("use is empty, please check.")
+		log.Criticalf("use is empty, please check.")
 	}
 	password, _ := cfg.GetValue(goconfig.DEFAULT_SECTION, "password")
 	if password == "" {
-		log.Fatalln("password is empty, please check.")
+		log.Criticalf("password is empty, please check.")
 	}
 	port, _ := cfg.GetValue(goconfig.DEFAULT_SECTION, "port")
 	if port == "" {
-		log.Fatalln("port is empyt, please  check.")
+		log.Criticalf("port is empyt, please  check.")
 	}
 	database, _ := cfg.GetValue(goconfig.DEFAULT_SECTION, "database")
 	if database == "" {
-		log.Fatalln("database is empty, please check.")
+		log.Criticalf("database is empty, please check.")
 
 	}
 
 	ldb, err := sql.Open("mysql", user+":"+password+"@tcp("+host+":"+port+")/"+database+"?charset=utf8")
 	if err != nil {
-		log.Println("Open database error %s\n", err)
+		log.Criticalf("Open database error %s\n", err)
 	}
 
 	err = ldb.Ping()
 	if err != nil {
-		log.Fatal(err)
+		log.Criticalf("open err")
 	}
 	return ldb
 }
@@ -139,7 +107,7 @@ func applicationInit() bool {
 	}
 	cfg, err = goconfig.LoadConfigFile(*config_file_name)
 	if err != nil {
-		log.Fatalln("读取配置文件失败[config.ini]")
+		log.Criticalf("读取配置文件失败[config.ini]")
 		return false
 	}
 	return true
