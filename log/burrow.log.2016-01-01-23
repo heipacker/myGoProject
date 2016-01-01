@@ -1,0 +1,12 @@
+2016-01-01 23:19:50 [INFO] info log info
+2016-01-01 23:19:50 [WARN] warn log info
+2016-01-01 23:19:50 [ERROR] error log info
+2016-01-01 23:19:50 [CRITICAL] criticalf log info
+2016-01-01 23:21:13 [INFO] info log info
+2016-01-01 23:21:13 [WARN] warn log info
+2016-01-01 23:21:13 [ERROR] error log info
+2016-01-01 23:21:13 [CRITICAL] criticalf log info
+2016-01-01 23:27:10 [INFO] info log info
+2016-01-01 23:27:10 [WARN] warn log info
+2016-01-01 23:27:10 [ERROR] error log info
+2016-01-01 23:27:10 [CRITICAL] criticalf log info
