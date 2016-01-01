@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 )
 import (
 	log "github.com/cihub/seelog"
@@ -39,6 +41,110 @@ type student struct {
 }
 
 func main() {
+	testGoLang()
+	testArray()
+	testMap()
+	testStruct()
+	testType()
+	testBreakContinue()
+	testArgument("1", 1, 12, 2, 3, 4)
+	testGo()
+	testSelect()
+	testPath()
+	testGetwd()
+	testJson()
+	testLog()
+	dbQuery()
+}
+
+func testSelect() {
+	a, b := make(chan int, 3), make(chan int)
+	go func() {
+		v, ok, s := 0, false, ""
+		for {
+			select {
+			// 随机选择可用用 channel,接收数据。
+			case v, ok = <-a:
+				s = "a"
+			case v, ok = <-b:
+				s = "b"
+			}
+			if ok {
+				fmt.Println(s, v)
+			} else {
+				os.Exit(0)
+			}
+		}
+	}()
+
+	for i := 0; i < 5; i++ {
+		select {
+		// 随机选择可用用 channel,发送数据。
+		case a <- i:
+		case b <- i:
+		}
+	}
+	close(a)
+	select {} // 没有可用用 channel,阻塞 main goroutine。
+}
+
+func arrayTest() {
+	a, j := [4]int{1, 2, 3, 4}, 2
+	for i := 0; i < len(a); i++ {
+		log.Info(a[i])
+	}
+	log.Info(j)
+}
+
+func testPath() {
+	if lpath, err := exec.LookPath(os.Args[0]); err == nil {
+		if pathName, err := filepath.Abs(lpath); err == nil {
+			println(pathName)
+			return
+		}
+	}
+	println("get error.")
+}
+
+func testArgument(s string, s1 int, a ...int) {
+	println(s)
+	println(s1)
+	for i, length := 0, len(a); i < length; i++ {
+		println(a[i])
+	}
+	for _, i := range a {
+		println(i)
+	}
+}
+
+func testBreakContinue() {
+L2:
+	for i := 0; i < 3; i++ {
+	L1:
+		for j := 0; j < 5; j++ {
+			if j > 2 {
+				break L1
+			}
+			if i > 1 {
+				break L2
+			}
+			print(i, ":", j, "	")
+		}
+		println()
+	}
+}
+
+func testType() {
+	u := "电脑"
+	println(u)
+
+	us := []rune(u)
+	us[1] = '话'
+
+	println(string(us))
+}
+
+func testGoLang() {
 	fmt.Println("hello world")
 	fmt.Println(a)
 	fmt.Println(stringutil.Reverse(b))
@@ -57,12 +163,6 @@ func main() {
 	if a := 1; a > 0 {
 		fmt.Println(a)
 	}
-	testArray()
-	testMap()
-	testStruct()
-	testGetwd()
-	testJson()
-	testLog()
 }
 
 func testGetwd() {
