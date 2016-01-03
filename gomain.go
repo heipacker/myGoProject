@@ -54,6 +54,7 @@ func main() {
 	testJson()
 	testGetwd()
 	dbQuery()
+	testRedisGo()
 	testHttp()
 	testSelect()
 }
