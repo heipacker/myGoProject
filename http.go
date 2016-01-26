@@ -27,7 +27,7 @@ func testHttp() {
 	emailBytes, _ := json.Marshal(alertEmail)
 	body := bytes.NewBuffer([]byte(emailBytes))
 	log.Info(body)
-	response, err := http.Post("http://l-schedule1.qss.dev.cn0.qunar.com:8080/alarm/sendAll", "application/x-www-form-urlencoded", body)
+	response, err := http.Post("http://l-test.com:8080/alarm/sendAll", "application/x-www-form-urlencoded", body)
 	if err != nil {
 		log.Criticalf("post error, please check.%s", err)
 		return

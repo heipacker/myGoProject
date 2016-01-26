@@ -7,7 +7,7 @@ import (
 )
 
 func testRedisGo() {
-	c, err := redis.Dial("tcp", ":6379")
+	c, err := redis.Dial("tcp", "127.0.0.1:6379")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -17,9 +17,9 @@ func testRedisGo() {
 	c.Send("HMSET", "album:1", "title", "Red", "rating", 5)
 	c.Send("HMSET", "album:2", "title", "Earthbound", "rating", 1)
 	c.Send("HMSET", "album:3", "title", "Beat")
-	c.Send("LPUSH", "albums", "1")
-	c.Send("LPUSH", "albums", "2")
-	c.Send("LPUSH", "albums", "3")
+	c.Send("LPUSH", "albums", "redis1")
+	c.Send("LPUSH", "albums", "redis2")
+	c.Send("LPUSH", "albums", "redis3")
 	values, err := redis.Values(c.Do("SORT", "albums",
 		"BY", "album:*->rating",
 		"GET", "album:*->title",
